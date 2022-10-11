@@ -1,0 +1,122 @@
+# CDWV Auto DevOps template: static-compiled-page
+include: 'https://git.cdwv.pl/kubernetes-public/shared-auto-deploy-parts/raw/master/.auto-devops-script.yml'
+
+variables:
+  extends: .auto_devops_variables
+  CDWV_AUTO_DEVOPS_TEMPLATE: static-compiled-page
+  HTTP_REGISTRY_IMAGE: $CI_REGISTRY_IMAGE
+  NODE_REGISTRY_IMAGE: $CI_REGISTRY_IMAGE/node
+  HELM_VERSION: 3.1.2
+  AUTO_DEVOPS_DOMAIN: dev.cdwv.pl
+  HELM_TIMEOUT: 5m
+  NODE_ENV: production
+
+.define_values: &define_values |
+  function define_values() {
+  cat <<EOF
+    application:
+      webReplicas: 1
+    exampleEnvVariable: "$EXAMPLE_ENV_VARIABLE"
+  EOF
+  }
+
+stages:
+  - Build Code
+  - Build Images
+  - Deploy Development
+  - Deploy Staging
+  - Deploy Production
+  - Clean Development
+
+.build_static_assets_template: &build_static_assets_template
+  stage: Build Code
+  image:
+    name: node:16
+  script:
+    - yarn install --force
+    - yarn run build
+  artifacts:
+    paths:
+      - ./build
+
+Build static assets dev:
+  <<: *build_static_assets_template
+
+Build http image:
+  image: docker:git
+  stage: Build Images
+  services:
+    - $DIND_IMAGE
+  script:
+    - build .kubedocker/nginx/Dockerfile $HTTP_REGISTRY_IMAGE $IMAGE_TAG
+
+Deploy Development Chart:
+  image: registry.dev.cdwv.pl/docker/k8s-deployment-toolset:K1_H3
+  stage: Deploy Development
+  dependencies: []
+  script:
+    - *define_values
+    - check_kube_domain
+    - update_chart_dependencies
+    - ensure_namespace
+    - create_secret
+    - deploy
+  when: manual
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    url: https://$KUBE_NAMESPACE-$CI_ENVIRONMENT_SLUG.$KUBE_INGRESS_BASE_DOMAIN
+    on_stop: Stop Development Chart
+    auto_stop_in: 1 week
+  except:
+    - main
+    - develop
+
+Deploy Staging Chart:
+  image: registry.dev.cdwv.pl/docker/k8s-deployment-toolset:K1_H3
+  stage: Deploy Staging
+  dependencies: []
+  script:
+    - *define_values
+    - check_kube_domain
+    - update_chart_dependencies
+    - ensure_namespace
+    - create_secret
+    - deploy
+  when: always
+  environment:
+    name: staging
+    url: https://flotiq-frontend.staging.$KUBE_INGRESS_BASE_DOMAIN
+  only:
+    - develop
+
+Deploy Production Chart:
+  image: registry.dev.cdwv.pl/docker/k8s-deployment-toolset:K1_H3
+  stage: Deploy Production
+  dependencies: []
+  script:
+    - *define_values
+    - check_kube_domain
+    - update_chart_dependencies
+    - ensure_namespace
+    - create_secret
+    - deploy
+  when: manual
+  environment:
+    name: production
+    url: https://flotiq-frontend.production.$KUBE_INGRESS_BASE_DOMAIN
+  only:
+    - main
+
+Stop Development Chart:
+  image: registry.dev.cdwv.pl/docker/k8s-deployment-toolset:K1_H3
+  stage: Clean Development
+  dependencies: []
+  script:
+    - delete
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    action: stop
+  when: manual
+  except:
+    - main
+    - develop

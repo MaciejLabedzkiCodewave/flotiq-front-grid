@@ -1,0 +1,46 @@
+@import 'rsuite/dist/rsuite.css';
+
+.rs-table-cell-content {
+    color: black;
+    font-size: 12px;
+}
+.rs-table-wrap {
+    font-size: calc(10px + 2vmin);
+    color: white;
+    padding-top: 40px;
+    padding-left: 50px;
+    padding-right: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.rs-table-wrap input {
+    margin-left: 10px;
+    border: 1px solid rgb(5, 5, 5);
+    color: black;
+}
+
+.rs-table-row-header {
+    background-color: transparent;
+}
+
+.rs-table-hover .rs-table-row:not(.rs-table-row-header):hover,
+.rs-table-hover .rs-table-row:hover .rs-table-cell-group,
+.rs-table-hover .rs-table-row:hover .rs-table-cell {
+    background-color: transparent;
+}
+
+.rs-table-hover .rs-table-row.rs-table-row-header:hover .rs-table-cell {
+    background-color: rgb(255, 255, 255);
+}
+
+.rs-table-hover .rs-table-row:not(.rs-table-row-header):hover .rs-table-cell {
+    background-color: rgb(160, 159, 159);
+}
+.rs-table-pagination {
+    display: flex;
+    justify-content: center;
+    color: white;
+}

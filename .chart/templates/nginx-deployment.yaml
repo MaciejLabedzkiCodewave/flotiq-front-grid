@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "appname" . }}
+    tier: "web"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "appname" . }}
+      tier: "web"
+  template:
+    metadata:
+      labels:
+        app: {{ template "appname" . }}
+        tier: "web"
+{{ toYaml .Values.application.additionalLabels | indent 8 }}
+    spec:
+      imagePullSecrets:
+{{ toYaml .Values.image.secrets | indent 6 }}
+      containers:
+      - name: {{ .Chart.Name }}-nginx
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 80
+          name: web-port
+        env:
+        - name: EXAMPLE_ENV_VARIABLE
+          value: "{{ .Values.exampleEnvVariable }}"

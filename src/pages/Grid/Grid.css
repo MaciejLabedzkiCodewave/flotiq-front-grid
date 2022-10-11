@@ -1,0 +1,135 @@
+.page-grid {
+    text-align: center;
+    background-color: #282c34;
+    min-height: 100vh;
+}
+
+.table-wrap {
+    font-size: calc(10px + 2vmin);
+    color: white;
+    padding-top: 40px;
+    padding-left: 50px;
+    padding-right: 50px;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    /* min-height: calc(100vh - 50px); */
+}
+
+.table-pagination {
+    display: flex;
+    justify-content: center;
+    height: 50px;
+}
+
+table {
+    border: 1px solid lightgray;
+}
+
+tbody {
+    border-bottom: 1px solid lightgray;
+    background-color: white;
+    color: black;
+    font-size: 14px;
+}
+
+td {
+    border-bottom: 1px solid lightgrey;
+}
+
+th {
+    position: relative;
+    border-bottom: 1px solid lightgray;
+    border-right: 1px solid lightgray;
+    padding: 2px 4px;
+    background: rgb(255, 255, 255);
+    color: black;
+    font-size: 14px;
+}
+
+tfoot {
+    color: gray;
+}
+
+tfoot th {
+    font-weight: normal;
+}
+
+tr:nth-child(odd) td {
+    background-color: rgba(236, 236, 236, 0.504);
+}
+
+tr:hover td {
+    background-color: rgb(190, 190, 190);
+}
+
+select {
+    color: black;
+    font-size: 12px;
+}
+
+input {
+    color: black;
+    font-size: 12px;
+}
+
+button {
+    color: rgb(255, 255, 255);
+    font-size: 12px;
+}
+
+span {
+    font-size: 12px;
+}
+
+:disabled {
+    opacity: 0.2;
+}
+
+.table-visibility {
+    width: 200px;
+    background-color: white;
+}
+
+.table-visibility-option {
+    text-align: left;
+}
+
+.resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: col-resize;
+    user-select: none;
+    touch-action: none;
+}
+
+.resizer.isResizing {
+    background: blue;
+    opacity: 1;
+}
+
+@media (hover: hover) {
+    .resizer {
+        opacity: 0;
+    }
+
+    *:hover > .resizer {
+        opacity: 1;
+    }
+}
+
+.table-input {
+    border: 1px solid blue;
+    width: 100px;
+    margin: 0;
+    padding: 0;
+}
+
+.table-sort-button {
+    color: black;
+    margin-left: 20px;
+}
